@@ -21,6 +21,7 @@ export default function Navbar() {
         <>
             <CustomLink to="/books/allbooks">All Books</CustomLink>
             <CustomLink to="/books/paginatedbooks">Paginated Books</CustomLink>
+            <CustomLink to="/books/addbook">Add Book</CustomLink>
         </>
     );
 }

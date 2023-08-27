@@ -19,7 +19,7 @@ export interface Cursor {
 }
 
 export interface Books {
-    books: Book[] | null;
+    books?: Book[] | null;
 }
 
 export interface PageParams {

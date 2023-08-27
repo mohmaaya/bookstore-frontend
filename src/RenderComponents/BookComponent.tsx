@@ -1,11 +1,12 @@
 import React from "react";
-import { Books, Book } from "../types/types";
+import { Books, Book, PageParams } from "../types/types";
 import BookCardComponent from "./BookCardComponent";
 
 interface BookComponentProps {
     booksData: Books | null;
     onViewBookAction: (book: Book) => void;
     onDeleteBookAction: (id: number) => void;
+ 
 }
 
 const BookComponent: React.FC<BookComponentProps> = ({ booksData, onViewBookAction, onDeleteBookAction }) => {

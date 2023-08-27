@@ -12,6 +12,7 @@ const BookCardComponent: React.FC<BookCardComponentProps> = ({ book }) => {
 
     return (
         <div className="book-card">
+            <h3>{book.id}</h3>
             <h3>{book.title}</h3>
             <p>Author: {book.author_name}</p>
             <p>First Publish Year: {book.first_publish_year}</p>

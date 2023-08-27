@@ -1,6 +1,6 @@
 
 import axios from "axios";
-import { PageParams } from "../types/types";
+import { Book, PageParams } from "../types/types";
 
 
 export function getAllBooks(pageParams: PageParams | null) {
@@ -10,4 +10,19 @@ export function getAllBooks(pageParams: PageParams | null) {
             params: pageParams,
         })
         .then(res => res.data)
+}
+
+export function addBook(book: Book) {
+    console.log(book);
+    return axios
+        .post("http://localhost:8080/books",
+            book 
+        )
+        .then(res => res.data)
+}
+
+export function deleteBook(id: number) {
+    return axios
+        .delete(`http://localhost:8080/books/${id}`)
+        .then(res => res.data);
 }
