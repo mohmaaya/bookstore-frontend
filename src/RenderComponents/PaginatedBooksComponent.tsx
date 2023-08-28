@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import BookComponent from "./BookComponent";
 import ChangePageComponent from "./ChangePageComponent";
@@ -8,13 +7,17 @@ import { Cursor, PageParams, Books, Book } from "../types/types";
 import { deleteBook, getAllBooks } from "../api/books";
 import { urlQuery } from "../Helper/urlFormatter";
 import ViewBookComponent from "./ViewBookComponent";
+import { AxiosError } from "axios";
 
 const PaginatedBooksComponent: React.FC = () => {
     const [books, setBooks] = useState<Books | null>(null);
     const [cursors, setCursors] = useState<Cursor | null>(null);
     const [parameters, setParameters] = useState<PageParams>({});
-    const [firstPublishYears, setFirstPublishYears] = useState<number[]>([]);
+    const [deletedBookId, setDeletedBookId] = useState<number>(0);
     const [shouldFetchData, setShouldFetchData] = useState<boolean>(true);
+    const [viewBook, setViewBook] = useState<Boolean>(false);
+    const [onBookDeleted, setOnBookDeleted] = useState<Boolean>(false);
+    const [onBookNotFound, setOnBookNotFound] = useState<Boolean>(false);
     const [currentBook, setCurrentBook] = useState<Book>({
         id: 0,
         title: "",
@@ -27,8 +30,6 @@ const PaginatedBooksComponent: React.FC = () => {
             L: "",
         }
     });
-    const [viewBook, setViewBook] = useState<boolean>(false);
-    const navigate = useNavigate();
 
     useEffect(() => {
         if (shouldFetchData) {
@@ -43,9 +44,6 @@ const PaginatedBooksComponent: React.FC = () => {
             const booksData: Books = {
                 books: data.books,
             };
-
-            const publishYears = data.books.map((book: { first_publish_year: number }) => book.first_publish_year);
-            setFirstPublishYears(publishYears);
 
             const newCursors: Cursor = {
                 currentCursor: data.cursor.currentCursor,
@@ -64,10 +62,20 @@ const PaginatedBooksComponent: React.FC = () => {
 
     const deleteBookMutation = useMutation(deleteBook, {
         onSuccess: (data) => {
-            console.log("book Deleted");
-            setShouldFetchData(true);
+            setOnBookDeleted(true);
+            setOnBookNotFound(false);
+            setTimeout(() => {
+                setOnBookDeleted(false);
+                setShouldFetchData(true);
+            }, 1500);
+          
         },
-        onError: () => { }
+        onError: (error: AxiosError) => {
+            
+            if (error.response && error.response.status === 400) {
+                setOnBookNotFound(true);
+            }
+}
     });
 
     const handleViewBookAction = (book: Book) => {
@@ -78,7 +86,7 @@ const PaginatedBooksComponent: React.FC = () => {
 
     const handleDeleteBookAction = (id: number) => {
         const query = `/${id}`;
-       // navigate(query);
+        setDeletedBookId(id);
         deleteBookMutation.mutate(id);
     };
 
@@ -89,7 +97,6 @@ const PaginatedBooksComponent: React.FC = () => {
             cursor: cursors?.previousCursor,
         }));
         const query = urlQuery(parameters);
-       // navigate(query);
         setShouldFetchData(true); 
     };
 
@@ -100,39 +107,52 @@ const PaginatedBooksComponent: React.FC = () => {
             cursor: cursors?.nextCursor,
         }));
         const query = urlQuery(parameters);
-       // navigate(query);
         setShouldFetchData(true); 
     };
 
-    const handleFilter = () => {
+    const handleFilter = (title: string, year: number, limit: number) => {
         setParameters((prevParams) => ({
             ...prevParams,
-            cursor: "",
-            direction: "",
+            title: title,
+            first_publish_year: year,
+            limit: limit
         }));
         const query = urlQuery(parameters);
        // navigate(query);
         setShouldFetchData(true); 
     };
 
-    const onTitleUpdate = (title: string | null) => {
+    const handleReset = () => {
+        setParameters(() => ({
+            limit: 10,
+            cursor: "",
+            direction: "",
+            title: "",
+            first_publish_year: null
+        }));
+        const query = urlQuery(parameters);
+        // navigate(query);
+        setShouldFetchData(true);
+    };
+
+    const onTitleUpdate = (title: string) => {
         setParameters((prevParams) => ({
             ...prevParams,
-            title: title,
+          
         }));
     };
 
     const onYearUpdate = (year: number) => {
         setParameters((prevParams) => ({
             ...prevParams,
-            first_publish_year: year,
+           
         }));
     };
 
     const onLimitUpdate = (limit: number) => {
         setParameters((prevParams) => ({
             ...prevParams,
-            limit: limit,
+           
         }));
     };
 
@@ -142,20 +162,37 @@ const PaginatedBooksComponent: React.FC = () => {
     };
 
     return (
-        <>
+        
+        <div className="flex flex-col items-center mt-20">
             <FilterComponent
                 onFilter={handleFilter}
-                firstPublishYears={firstPublishYears}
+                onReset={handleReset}
                 updateTitleParam={onTitleUpdate}
                 updateYearParam={onYearUpdate}
                 updateLimitParam={onLimitUpdate}
                 
+                
             />
-            <BookComponent booksData={books} onViewBookAction={handleViewBookAction} onDeleteBookAction={handleDeleteBookAction} />
-            {viewBook && <ViewBookComponent book={currentBook} onClose={onBookUpdate} />}
-            <ChangePageComponent cursors={cursors} onPreviousPage={handlePreviousPage} onNextPage={handleNextPage} />
+            
+            <div className=" w-[800px]">
+                <div className="overflow-auto h-full"> 
+                    <BookComponent
+                        booksData={books}
+                        onViewBookAction={handleViewBookAction}
+                        onDeleteBookAction={handleDeleteBookAction}
+                        onBookDeleted={onBookDeleted}
+                        deletedBookId={deletedBookId}
+                        bookNotFound={onBookNotFound}
+                    />
+                </div>
+            </div>
 
-        </>
+            {viewBook && <ViewBookComponent book={currentBook} onClose={onBookUpdate} />}
+
+            
+            <ChangePageComponent cursors={cursors} onPreviousPage={handlePreviousPage} onNextPage={handleNextPage} />
+            
+       </div>
     );
 };
 
