@@ -13,7 +13,6 @@ export function getAllBooks(pageParams: PageParams | null) {
 }
 
 export function addBook(book: Book) {
-    console.log(book);
     return axios
         .post("http://localhost:8080/books",
             book 
@@ -25,4 +24,13 @@ export function deleteBook(id: number) {
     return axios
         .delete(`http://localhost:8080/books/${id}`)
         .then(res => res.data);
+}
+
+export function updateBook(book: Book) {
+    const id = book.id;
+    return axios
+        .put(`http://localhost:8080/books/${id}`,
+            book
+        )
+        .then(res => res.data)
 }

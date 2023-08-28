@@ -6,6 +6,8 @@ import ChangePageComponent from "./ChangePageComponent";
 import FilterComponent from "./FilterComponent";
 import { Cursor, PageParams, Books, Book } from "../types/types";
 import { deleteBook, getAllBooks } from "../api/books";
+import { urlQuery } from "../Helper/urlFormatter";
+import ViewBookComponent from "./ViewBookComponent";
 
 const PaginatedBooksComponent: React.FC = () => {
     const [books, setBooks] = useState<Books | null>(null);
@@ -13,6 +15,19 @@ const PaginatedBooksComponent: React.FC = () => {
     const [parameters, setParameters] = useState<PageParams>({});
     const [firstPublishYears, setFirstPublishYears] = useState<number[]>([]);
     const [shouldFetchData, setShouldFetchData] = useState<boolean>(true);
+    const [currentBook, setCurrentBook] = useState<Book>({
+        id: 0,
+        title: "",
+        first_publish_year: 0,
+        number_of_pages_median: 0,
+        author_name: "",
+        covers: {
+            S: "",
+            M: "",
+            L: "",
+        }
+    });
+    const [viewBook, setViewBook] = useState<boolean>(false);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -23,7 +38,6 @@ const PaginatedBooksComponent: React.FC = () => {
 
     const fetchData = async () => {
         try {
-          //  const query = `?cursor=${parameters.cursor}&limit=${parameters.limit}&direction=${parameters.direction}`;
             const data = await getAllBooks(parameters);
 
             const booksData: Books = {
@@ -57,11 +71,14 @@ const PaginatedBooksComponent: React.FC = () => {
     });
 
     const handleViewBookAction = (book: Book) => {
-       
+        setCurrentBook(book);
+        setViewBook(true);
+
     };
 
     const handleDeleteBookAction = (id: number) => {
-       
+        const query = `/${id}`;
+       // navigate(query);
         deleteBookMutation.mutate(id);
     };
 
@@ -71,6 +88,8 @@ const PaginatedBooksComponent: React.FC = () => {
             direction: "previous",
             cursor: cursors?.previousCursor,
         }));
+        const query = urlQuery(parameters);
+       // navigate(query);
         setShouldFetchData(true); 
     };
 
@@ -80,6 +99,8 @@ const PaginatedBooksComponent: React.FC = () => {
             direction: "next",
             cursor: cursors?.nextCursor,
         }));
+        const query = urlQuery(parameters);
+       // navigate(query);
         setShouldFetchData(true); 
     };
 
@@ -89,6 +110,8 @@ const PaginatedBooksComponent: React.FC = () => {
             cursor: "",
             direction: "",
         }));
+        const query = urlQuery(parameters);
+       // navigate(query);
         setShouldFetchData(true); 
     };
 
@@ -113,6 +136,11 @@ const PaginatedBooksComponent: React.FC = () => {
         }));
     };
 
+    const onBookUpdate = () => {
+        setShouldFetchData(true);
+        setViewBook(false)
+    };
+
     return (
         <>
             <FilterComponent
@@ -124,7 +152,9 @@ const PaginatedBooksComponent: React.FC = () => {
                 
             />
             <BookComponent booksData={books} onViewBookAction={handleViewBookAction} onDeleteBookAction={handleDeleteBookAction} />
+            {viewBook && <ViewBookComponent book={currentBook} onClose={onBookUpdate} />}
             <ChangePageComponent cursors={cursors} onPreviousPage={handlePreviousPage} onNextPage={handleNextPage} />
+
         </>
     );
 };

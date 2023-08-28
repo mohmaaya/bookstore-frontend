@@ -1,6 +1,5 @@
-import React from 'react';
-import './App.css';
-import { Route, Routes, useNavigate, useLocation } from 'react-router-dom'
+//import './index.css';
+import { Route, Routes} from 'react-router-dom'
 import Navbar from './navigation/Navbar';
 import AllBooksComponent from './RenderComponents/AllBooksComponent';
 import PaginatedBooksComponent from './RenderComponents/PaginatedBooksComponent';
