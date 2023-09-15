@@ -10,7 +10,6 @@ interface AddBookComponentProps {
  
 }
 
-
 const AddBookComponent: React.FC<AddBookComponentProps> = () => {
 
     const [bookAdded, setBookAdded] = useState<Boolean>(false);
@@ -61,7 +60,7 @@ const AddBookComponent: React.FC<AddBookComponentProps> = () => {
     }, [createBookMutation.status]);
 
     return (
-        <div className="flex mt-20 justify-center items-center h-full">
+        <div className="flex mt-20 justify-center items-center bg-gray-100">
             <form
                 onSubmit={handleSubmit}
                 className="bg-white p-10 rounded-lg shadow-md w-[400px]"

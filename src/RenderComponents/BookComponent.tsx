@@ -1,5 +1,5 @@
 import React from "react";
-import { Books, Book, PageParams } from "../types/types";
+import { Books, Book } from "../types/types";
 import BookCardComponent from "./BookCardComponent";
 
 interface BookComponentProps {
@@ -30,14 +30,23 @@ const BookComponent: React.FC<BookComponentProps> = ({ booksData,
 
                                 <button
                                     onClick={() => onViewBookAction(book)}
-                                    className="bg-blue-500 text-white px-3 py-1 rounded-md mx-2 mt-2"
+                                    className="bg-blue-500 
+                                                text-white 
+                                                px-3 py-1 rounded-md 
+                                                mx-2 mt-2
+                                                hover:bg-gray-300 
+                                                hover:text-gray-800 "
                                 >
                                     View Book
                                 </button>
 
                                 <button
                                     onClick={() => onDeleteBookAction(book.id)}
-                                    className="bg-red-500 text-white px-3 py-1 rounded-md mt-2"
+                                    className="bg-red-500 
+                                                text-white 
+                                                px-3 py-1 rounded-md 
+                                                mt-2 hover:bg-gray-300 
+                                                hover:text-gray-800 "
                                 >
                                     Delete Book
                                 </button>
@@ -58,7 +67,7 @@ const BookComponent: React.FC<BookComponentProps> = ({ booksData,
                         ))}
                     </ul>
                 ) : (<p className="text-lg font-bold text-blue-600 mb-1">
-                    {`No books available in the Database. Add some books.`}
+                    {`Reset the filter if enabled or no books available in database.`}
                     </p>)
             }
         </div>

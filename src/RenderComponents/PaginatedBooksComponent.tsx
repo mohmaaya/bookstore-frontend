@@ -5,7 +5,6 @@ import ChangePageComponent from "./ChangePageComponent";
 import FilterComponent from "./FilterComponent";
 import { Cursor, PageParams, Books, Book } from "../types/types";
 import { deleteBook, getAllBooks } from "../api/books";
-import { urlQuery } from "../Helper/urlFormatter";
 import ViewBookComponent from "./ViewBookComponent";
 import { AxiosError } from "axios";
 
@@ -78,6 +77,8 @@ const PaginatedBooksComponent: React.FC = () => {
 }
     });
 
+   
+
     const handleViewBookAction = (book: Book) => {
         setCurrentBook(book);
         setViewBook(true);
@@ -85,7 +86,6 @@ const PaginatedBooksComponent: React.FC = () => {
     };
 
     const handleDeleteBookAction = (id: number) => {
-        const query = `/${id}`;
         setDeletedBookId(id);
         deleteBookMutation.mutate(id);
     };
@@ -96,7 +96,7 @@ const PaginatedBooksComponent: React.FC = () => {
             direction: "previous",
             cursor: cursors?.previousCursor,
         }));
-        const query = urlQuery(parameters);
+      
         setShouldFetchData(true); 
     };
 
@@ -106,19 +106,20 @@ const PaginatedBooksComponent: React.FC = () => {
             direction: "next",
             cursor: cursors?.nextCursor,
         }));
-        const query = urlQuery(parameters);
+        
         setShouldFetchData(true); 
     };
 
     const handleFilter = (title: string, year: number, limit: number) => {
+      
         setParameters((prevParams) => ({
-            ...prevParams,
+            direction: (title || year) ? "" : prevParams.direction,
+            cursor: (title || year) ? "" : prevParams.cursor,
             title: title,
             first_publish_year: year,
             limit: limit
         }));
-        const query = urlQuery(parameters);
-       // navigate(query);
+     
         setShouldFetchData(true); 
     };
 
@@ -130,8 +131,7 @@ const PaginatedBooksComponent: React.FC = () => {
             title: "",
             first_publish_year: null
         }));
-        const query = urlQuery(parameters);
-        // navigate(query);
+       
         setShouldFetchData(true);
     };
 

@@ -17,6 +17,7 @@ const ViewBookComponent: React.FC<ViewBookComponentProps> = ({ book, onClose }) 
     const [bookUpdated, setBookUpdated] = useState<Boolean>(false);
     const [loading, setLoading] = useState<Boolean>(false);
     const [bookNotFound, setBookNotFound] = useState<Boolean>(false);
+    const [duplicateBookExist, setDuplicateBookExist] = useState<Boolean>(false);
 
     const { values, handleChange, handleSubmit } = useForm(
         book,
@@ -31,7 +32,8 @@ const ViewBookComponent: React.FC<ViewBookComponentProps> = ({ book, onClose }) 
     const updateBookMutation = useMutation(updateBook, {
         onSuccess: (data) => {
             setLoading(false);
-            setBookNotFound(false);
+            if (bookNotFound) setBookNotFound(false);
+            if (duplicateBookExist) setDuplicateBookExist(false);
             setBookUpdated(true);
             setTimeout(() => {
                 setBookUpdated(false);
@@ -43,8 +45,11 @@ const ViewBookComponent: React.FC<ViewBookComponentProps> = ({ book, onClose }) 
         },
         onError: (error: AxiosError) => {
             setLoading(false);
-            if (error.response && error.response.status === 400) {
+            if (error.response && error.response.status === 404) {
                 setBookNotFound(true);
+            }
+            if (error.response && error.response.status === 409) {
+                setDuplicateBookExist(true);
             }
         }
     });
@@ -74,7 +79,7 @@ const ViewBookComponent: React.FC<ViewBookComponentProps> = ({ book, onClose }) 
                 </div>
 
                 <div className="ml-8 flex-grow">
-                    <div className="relative mt-2 mb-3" style={{ left: "300px" }}>
+                    <div className="relative mt-2 mb-3" style={{ left: "250px" }}>
                         <button
                             type="button"
                             className="bg-red-500 text-white px-3 py-2 rounded-md"
@@ -168,12 +173,17 @@ const ViewBookComponent: React.FC<ViewBookComponentProps> = ({ book, onClose }) 
                                     {loading && <p className="text-lg font-bold mb-1">Loading...</p>}
                                     {bookNotFound && (
                                         <h3 className="text-lg font-bold text-red-600 mb-1">
-                                            Book not found or a book with same Name and Author exists.
+                                            Book not found.
                                         </h3>
                                     )}
                                     {bookUpdated && (
                                         <h3 className="text-lg font-bold text-green-600 mb-1">
                                             Book has been successfully added! Redirecting to view mode...
+                                        </h3>
+                                    )}
+                                    {duplicateBookExist && (
+                                        <h3 className="text-lg font-bold text-red-600 mb-1">
+                                           Book with the same title and author name exists. 
                                         </h3>
                                     )}
                                 </div>

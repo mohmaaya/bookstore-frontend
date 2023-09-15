@@ -1,20 +1,20 @@
 import { Route, Routes} from 'react-router-dom'
 import Navbar from './navigation/Navbar';
-import AllBooksComponent from './RenderComponents/AllBooksComponent';
 import PaginatedBooksComponent from './RenderComponents/PaginatedBooksComponent';
 import AddBookComponent from './RenderComponents/AddBookComponent';
+import AboutComponent from './RenderComponents/AboutComponent';
 
-function App() {
-
+const App = () => {
 
   return (
-      <div className = ""   >
+      <div>
       <Navbar />
         
               <Routes>
                       <Route path="/" />
+                      <Route index element={<AboutComponent />} />
                       <Route path="/books/*">
-                          <Route path="allbooks" element={<AllBooksComponent />} />
+                          <Route path="about" element={<AboutComponent />} />
                           <Route path="paginatedbooks" element={<PaginatedBooksComponent />} />
                           <Route path="addbook" element={<AddBookComponent />} />
                       </Route>

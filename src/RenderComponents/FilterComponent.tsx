@@ -18,6 +18,7 @@ const FilterComponent: React.FC<FilterComponentProps> = ({
     const [searchedTitle, setSearchedTitle] = useState<string>("");
     const [selectedYear, setSelectedYear] = useState<number>(0);
     const [selectedLimit, setSelectedLimit] = useState<number>(10);
+    const [filterEnabled, setFilterEnabled] = useState<Boolean>(false);
 
     const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const newTitle = event.target.value;
@@ -39,6 +40,11 @@ const FilterComponent: React.FC<FilterComponentProps> = ({
 
     const handleFilterClick = () => {
         onFilter(searchedTitle, selectedYear, selectedLimit);
+        setFilterEnabled(true);
+        setTimeout(() => {
+            setFilterEnabled(false);
+        }, 2000);
+
     };
 
     const handleResetClick = () => {
@@ -53,6 +59,7 @@ const FilterComponent: React.FC<FilterComponentProps> = ({
     const booksPublishedSince = [1500, 1600, 1650, 1700, 1800, 1900, 1930, 1960, 1980, 2000, 2010];
 
     return (
+        <>
         <div className="my-4 mt-5 flex space-x-2 items-center">
             <input
                 type="text"
@@ -84,15 +91,31 @@ const FilterComponent: React.FC<FilterComponentProps> = ({
             </select>
             <button
                 onClick={handleFilterClick}
-                className="bg-blue-500 text-white px-4 py-2 rounded"
+                    className="bg-blue-500 
+                                text-white 
+                                px-4 py-2 
+                                rounded     
+                                hover:bg-gray-300 
+                                hover:text-gray-800 "
             >Filter
             </button>
             <button
                 onClick={handleResetClick}
-                className="bg-blue-500 text-white px-4 py-2 rounded"
+                    className="bg-blue-500 
+                               text-white 
+                               px-4 py-2 
+                               rounded 
+                               hover:bg-gray-300 
+                               hover:text-gray-800 "
             >Reset
             </button>
         </div>
+            {filterEnabled && (
+                <h3 className="text-lg text-green-600">
+                        Books filtered
+                </h3>
+            )}
+        </>
     );
 };
 

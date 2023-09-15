@@ -11,7 +11,9 @@
     <Script Include="**" Exclude="*.esproj;**\node_modules\**" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="src\ApiServices\" />
+    <Script Remove="src\ApiServices\**" />
+  </ItemGroup>
+  <ItemGroup>
     <Folder Include="src\api\" />
     <Folder Include="src\types\" />
   </ItemGroup>
